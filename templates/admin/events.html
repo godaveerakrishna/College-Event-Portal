@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Events - College Event Portal{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Manage Events</h2>
+    </div>
+    <div class="col text-end">
+        <a href="{{ url_for('admin.create_event') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Event
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                        <th>Registration</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.title }}</td>
+                        <td>{{ event.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ event.time.strftime('%I:%M %p') }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>
+                            {% set percentage = (event.registered_count / event.capacity * 100)|round|int %}
+                            <div class="progress">
+                                <div class="progress-bar" style="width: {{ percentage }}%">
+                                    {{ event.registered_count }}/{{ event.capacity }}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-success">{{ event.status }}</span>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="{{ url_for('admin.event_registrations', event_id=event.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-users"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ event.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+
+                            <div class="modal fade" id="deleteModal{{ event.id }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Are you sure you want to delete "{{ event.title }}"?</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ url_for('admin.delete_event', event_id=event.id) }}" method="POST">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">No events found</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Use the CDN link for Font Awesome -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+{% endblock %}

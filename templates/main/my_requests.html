@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}My Event Requests{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Event Requests</h2>
+        <a href="{{ url_for('main.request_event') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> New Request
+        </a>
+    </div>
+
+    {% if requests %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                        <th>Capacity</th>
+                        <th>Status</th>
+                        <th>Submitted On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in requests %}
+                        <tr>
+                            <td>{{ request.title }}</td>
+                            <td>{{ request.proposed_date.strftime('%B %d, %Y') }}</td>
+                            <td>{{ request.proposed_time.strftime('%I:%M %p') }}</td>
+                            <td>{{ request.location }}</td>
+                            <td>{{ request.capacity }}</td>
+                            <td>
+                                {% if request.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif request.status == 'approved' %}
+                                    <span class="badge bg-success">Approved</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ request.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% if request.admin_remarks and request.status != 'pending' %}
+                            <tr>
+                                <td colspan="7" class="table-light">
+                                    <strong>Admin Remarks:</strong> {{ request.admin_remarks }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p class="mb-0">You haven't made any event requests yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

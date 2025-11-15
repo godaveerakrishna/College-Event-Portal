@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Upcoming Events</h2>
+    <div class="row">
+        {% for event in events %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if event.image_url %}
+                <img src="{{ event.image_url }}" class="card-img-top" alt="{{ event.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.title }}</h5>
+                    <p class="card-text">{{ event.description }}</p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar"></i> {{ event.date.strftime('%B %d, %Y') }}<br>
+                            <i class="fas fa-clock"></i> {{ event.time.strftime('%I:%M %p') }}<br>
+                            <i class="fas fa-map-marker-alt"></i> {{ event.location }}
+                        </small>
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Available Spots: {{ event.capacity - event.registered_count }}
+                        </small>
+                    </p>
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('event.register_event', event_id=event.id) }}" 
+                           class="btn btn-primary">Register</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login to Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

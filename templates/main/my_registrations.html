@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}My Registrations{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">My Event Registrations</h2>
+
+    {% if registrations %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for registration in registrations %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if registration.image_url %}
+                            <img src="{{ url_for('static', filename='uploads/' + registration.image_url) }}" 
+                                 class="card-img-top" 
+                                 alt="{{ registration.title }}"
+                                 style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light text-center py-5">
+                                <i class="fas fa-calendar-alt fa-3x text-muted"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ registration.title }}</h5>
+                            <p class="card-text">{{ registration.description[:150] }}{% if registration.description|length > 150 %}...{% endif %}</p>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <i class="fas fa-calendar"></i> 
+                                {{ registration.date.strftime('%B %d, %Y') }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-clock"></i> 
+                                {{ registration.time.strftime('%I:%M %p') }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-map-marker-alt"></i> 
+                                {{ registration.location }}
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-clock"></i> 
+                                Registered on: {{ registration.registration_date.strftime('%Y-%m-%d %H:%M') }}
+                            </li>
+                        </ul>
+                        <div class="card-footer">
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('main.event_details', event_id=registration.id) }}" 
+                                   class="btn btn-primary">View Details</a>
+                                <form method="POST" action="{{ url_for('main.cancel_registration', event_id=registration.id) }}"
+                                      onsubmit="return confirm('Are you sure you want to cancel your registration?');">
+                                    <button type="submit" class="btn btn-danger w-100">Cancel Registration</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p class="mb-0">You haven't registered for any events yet. 
+                <a href="{{ url_for('main.index') }}">Browse available events</a>
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Event Registrations - College Event Portal{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>Event Registrations</h2>
+        <h5 class="text-muted">{{ event.title }}</h5>
+    </div>
+    <div class="col text-end">
+        <a href="{{ url_for('admin.manage_events') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Events
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Event Details</h5>
+                <ul class="list-unstyled">
+                    <li><strong>Date:</strong> {{ event.date.strftime('%B %d, %Y') }}</li>
+                    <li><strong>Time:</strong> {{ event.time.strftime('%I:%M %p') }}</li>
+                    <li><strong>Location:</strong> {{ event.location }}</li>
+                    <li><strong>Capacity:</strong> {{ event.capacity }}</li>
+                    <li>
+                        <strong>Registration Status:</strong>
+                        <div class="progress mt-2">
+                            {% set percentage = (registrations|length / event.capacity * 100)|round|int %}
+                            <!-- <div class="progress-bar text-center" style="width: {{ percentage }}%" role="progressbar"> -->
+                                <span>{{ registrations|length }}/{{ event.capacity }} registered</span>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Registered Users</h5>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Registration Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registration in registrations %}
+                            <tr>
+                                <td>{{ registration.username }}</td>
+                                <td>{{ registration.email }}</td>
+                                <td>{{ registration.registration_date.strftime('%Y-%m-%d %I:%M %p') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if registration.status == 'confirmed' else 'warning' if registration
